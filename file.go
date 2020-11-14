@@ -42,3 +42,22 @@ func CreateFolderSafely(
 
 	return
 }
+
+// Tries to get Access to a File.
+func Exists(
+	filePath string,
+) (exists bool, err error) {
+	_, err = os.Stat(filePath)
+	if err == nil {
+		exists = true
+		return
+	}
+	if os.IsNotExist(err) {
+		err = nil
+		exists = false
+		return
+	}
+	// We can not say whether it exists or not while it is not accessible.
+	// So, we return an Error.
+	return
+}

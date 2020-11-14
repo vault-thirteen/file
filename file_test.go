@@ -1,7 +1,5 @@
 // file_test.go.
 
-// +build test
-
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Copyright © 2019..2020 by Vault Thirteen.
@@ -34,7 +32,7 @@ import (
 func Test_CreateFolderSafely(t *testing.T) {
 
 	const TmpFolder = "/tmp"
-	const TmpTestFolder = "ads-libraries-temporary"
+	const TmpTestFolder = "libs-temporary"
 
 	var aTest *tester.Test
 	var err error
@@ -70,5 +68,41 @@ func Test_CreateFolderSafely(t *testing.T) {
 
 	// Clear the Environment.
 	err = os.RemoveAll(testFolder)
+	aTest.MustBeNoError(err)
+}
+
+func Test_Exists(t *testing.T) {
+
+	const (
+		TestFile             = "test-file.txt"
+		FileThatDoesNotExist = "test-file-that-does-not-exist.txt"
+	)
+
+	var aTest *tester.Test
+	var err error
+	aTest = tester.New(t)
+
+	// Prepare the Environment.
+	{
+		var file *os.File
+		file, err = os.Create(TestFile)
+		aTest.MustBeNoError(err)
+		err = file.Close()
+		aTest.MustBeNoError(err)
+	}
+
+	// Test #1. Check the existing File.
+	var exists bool
+	exists, err = Exists(TestFile)
+	aTest.MustBeNoError(err)
+	aTest.MustBeEqual(exists, true)
+
+	// Test #2. Check the File which does not exist.
+	exists, err = Exists(FileThatDoesNotExist)
+	aTest.MustBeNoError(err)
+	aTest.MustBeEqual(exists, false)
+
+	// Clear the Environment.
+	err = os.Remove(TestFile)
 	aTest.MustBeNoError(err)
 }
